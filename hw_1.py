@@ -25,32 +25,6 @@ def f(x):
     return -x
 
 
-# def a(i, x_):
-#     # a_0 = 0
-#     if i == 0:
-#         return 0
-#     # a_i = 1 - h * p_i / 2
-#     return 1
-#
-#
-# def b(h):
-#     # b_i = h**2 * q_i - 2
-#     return h * h * 2 - 2
-#
-#
-# def c(i, n):
-#     # c_n = 0
-#     if i == n:
-#         return 0
-#     # c_i = 1 + h * p_i / 2
-#     return 1
-#
-#
-# def d(h, x):
-#     # d_i = h**2 * f_i
-#     return h * h * f(x)
-
-
 def get_v_table(table, n):
     # v_i = - c_i / (b_i + a_i * v_{i-1})
     c_0 = table[0][1]['c']
@@ -85,10 +59,10 @@ def get_u_table(v_table, table, n):
     return u_table
 
 
-def get_y_table(u_table, v_table, n):
+def get_y_table(u_table, v_table, n, y_0, y_n):
     # y_i = u_i + v_i * y_{i+1}
     # y(0) = 0, #y(1) = 0
-    y_table = {0: 0, n: 0}
+    y_table = {0: y_0, n: y_n}
 
     for i in range(n-1, 0, -1):
         u_i = u_table[i]
@@ -133,20 +107,26 @@ def get_table(n):
     return table
 
 
+def sweep_method(n, nodes, y_0, y_n):
+    v_table = get_v_table(nodes, n)
+    u_table = get_u_table(v_table, nodes, n)
+    y_table = get_y_table(u_table, v_table, n, y_0, y_n)
+    y_table = dict(sorted(y_table.items()))
+
+    return y_table
+
+
 def main():
     print('Решение ОДУ 2 порядка методом прогонки')
     print()
     ns = [10, 100]
     for n in ns:
         nodes = get_table(n)
-        v_table = get_v_table(nodes, n)
-        u_table = get_u_table(v_table, nodes, n)
-        y_table = get_y_table(u_table, v_table, n)
-        y_table = dict(sorted(y_table.items()))
+        y_table = sweep_method(n, nodes, 0, 0)
         print_dict(nodes, y_table)
 
 
-main()
+# main()
 
 
 
